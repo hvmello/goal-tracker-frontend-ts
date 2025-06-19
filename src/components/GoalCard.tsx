@@ -81,86 +81,89 @@ export const GoalCard: React.FC<GoalCardProps> = ({
   };
 
   return (
-    <Card className="group hover:shadow-lg transition-all duration-300 hover:-translate-y-1 bg-white/80 backdrop-blur-sm border-white/20 overflow-hidden">
+    <Card className="hover:shadow-lg transition-all duration-300 hover:-translate-y-1 bg-white/80 backdrop-blur-sm border-white/20 overflow-hidden">
       <CardHeader className="pb-3">
-        <div className="flex items-start justify-between mb-2">
-          <h3 className="font-semibold text-lg text-gray-900 line-clamp-1 group-hover:text-indigo-600 transition-colors">
-            {goal.title}
-          </h3>
-          <div className="flex items-center gap-2">
+        {/* Header with title and actions */}
+        <div className="flex items-start justify-between mb-3">
+          <div className="flex-1 min-w-0 pr-3">
+            <h3 className="font-semibold text-lg text-gray-900 leading-tight mb-2 break-words">
+              {goal.title}
+            </h3>
             <GoalStatus status={goal.status} />
-            
-            {/* Action Buttons */}
-            <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-              {!isEditing ? (
+          </div>
+          
+          {/* Action Buttons - Always visible */}
+          <div className="flex items-center gap-1 flex-shrink-0">
+            {!isEditing ? (
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8 text-gray-500 hover:text-blue-600"
+                onClick={() => setIsEditing(true)}
+              >
+                <Edit3 className="h-4 w-4" />
+              </Button>
+            ) : (
+              <>
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="h-8 w-8 text-gray-500 hover:text-blue-600"
-                  onClick={() => setIsEditing(true)}
+                  className="h-8 w-8 text-gray-500 hover:text-green-600"
+                  onClick={handleSaveProgress}
                 >
-                  <Edit3 className="h-4 w-4" />
+                  <Save className="h-4 w-4" />
                 </Button>
-              ) : (
-                <>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-8 w-8 text-gray-500 hover:text-green-600"
-                    onClick={handleSaveProgress}
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8 text-gray-500 hover:text-red-600"
+                  onClick={handleCancelEdit}
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              </>
+            )}
+            
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8 text-gray-500 hover:text-red-600"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Excluir Meta</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Tem certeza que deseja excluir a meta "{goal.title}"? Esta ação não pode ser desfeita.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                  <AlertDialogAction 
+                    onClick={handleDeleteGoal}
+                    className="bg-red-600 hover:bg-red-700"
                   >
-                    <Save className="h-4 w-4" />
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-8 w-8 text-gray-500 hover:text-red-600"
-                    onClick={handleCancelEdit}
-                  >
-                    <X className="h-4 w-4" />
-                  </Button>
-                </>
-              )}
-              
-              <AlertDialog>
-                <AlertDialogTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-8 w-8 text-gray-500 hover:text-red-600"
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                </AlertDialogTrigger>
-                <AlertDialogContent>
-                  <AlertDialogHeader>
-                    <AlertDialogTitle>Excluir Meta</AlertDialogTitle>
-                    <AlertDialogDescription>
-                      Tem certeza que deseja excluir a meta "{goal.title}"? Esta ação não pode ser desfeita.
-                    </AlertDialogDescription>
-                  </AlertDialogHeader>
-                  <AlertDialogFooter>
-                    <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                    <AlertDialogAction 
-                      onClick={handleDeleteGoal}
-                      className="bg-red-600 hover:bg-red-700"
-                    >
-                      Excluir
-                    </AlertDialogAction>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialog>
-            </div>
+                    Excluir
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
           </div>
         </div>
-        <p className="text-gray-600 text-sm line-clamp-2 leading-relaxed">
+
+        {/* Description */}
+        <p className="text-gray-600 text-sm leading-relaxed break-words">
           {goal.description}
         </p>
       </CardHeader>
 
-      <CardContent className="pt-0">
-        {/* Progress Section */}
-        <div className="mb-4">
+      <CardContent className="pt-0 space-y-4">
+        {/* Progress Section - Moved below */}
+        <div>
           <div className="flex items-center justify-between mb-2">
             <span className="text-sm font-medium text-gray-700">Progresso</span>
             <span className="text-sm font-bold text-gray-900">
@@ -199,9 +202,9 @@ export const GoalCard: React.FC<GoalCardProps> = ({
         </div>
 
         {/* Deadline Section */}
-        <div className="flex items-center justify-between text-sm">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-sm">
           <div className="flex items-center gap-1 text-gray-600">
-            <Calendar className="h-4 w-4" />
+            <Calendar className="h-4 w-4 flex-shrink-0" />
             <span>{formatDate(goal.deadline)}</span>
           </div>
           
@@ -211,7 +214,7 @@ export const GoalCard: React.FC<GoalCardProps> = ({
             daysLeft <= 2 ? "text-yellow-600" : 
             "text-gray-600"
           )}>
-            <Clock className="h-4 w-4" />
+            <Clock className="h-4 w-4 flex-shrink-0" />
             <span>
               {daysLeft < 0 ? `${Math.abs(daysLeft)} dias atrás` :
                daysLeft === 0 ? 'Hoje' :

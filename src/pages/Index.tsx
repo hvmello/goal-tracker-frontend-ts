@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { GoalCard } from '@/components/GoalCard';
@@ -174,7 +175,7 @@ const Index = () => {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 p-6">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 p-4 md:p-6">
         <div className="max-w-7xl mx-auto">
           <Alert className="max-w-md mx-auto mt-20">
             <AlertCircle className="h-4 w-4" />
@@ -191,77 +192,77 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
-      {/* Header */}
-      <header className="bg-white/80 backdrop-blur-sm border-b border-white/20 sticky top-0 z-10">
-        <div className="max-w-7xl mx-auto px-6 py-6">
-          <div className="flex items-center justify-between mb-6">
+      {/* Header - Fixed positioning for mobile */}
+      <header className="bg-white/80 backdrop-blur-sm border-b border-white/20 relative z-10">
+        <div className="max-w-7xl mx-auto px-4 md:px-6 py-4 md:py-6">
+          <div className="flex flex-col md:flex-row md:items-center justify-between mb-4 md:mb-6 gap-4">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">
+              <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
                 Dashboard de Metas
               </h1>
-              <p className="text-gray-600">
+              <p className="text-gray-600 text-sm md:text-base">
                 Acompanhe seu progresso e mantenha-se motivado
               </p>
             </div>
             <div className="flex items-center gap-4">
               <Button
                 onClick={() => setIsCreateFormOpen(true)}
-                className="bg-indigo-600 hover:bg-indigo-700 text-white"
+                className="bg-indigo-600 hover:bg-indigo-700 text-white w-full md:w-auto"
               >
                 <Plus className="h-4 w-4 mr-2" />
                 Nova Meta
               </Button>
-              <Target className="h-8 w-8 text-indigo-600" />
+              <Target className="h-6 w-6 md:h-8 md:w-8 text-indigo-600 hidden md:block" />
             </div>
           </div>
 
           {/* Stats Cards */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div className="bg-white rounded-xl p-4 shadow-sm border border-white/20">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
+            <div className="bg-white rounded-xl p-3 md:p-4 shadow-sm border border-white/20">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-gray-600">Total</p>
-                  <p className="text-2xl font-bold text-gray-900">
-                    {isLoading ? <Skeleton className="h-6 w-8" /> : stats.total}
+                  <p className="text-xs md:text-sm text-gray-600">Total</p>
+                  <p className="text-lg md:text-2xl font-bold text-gray-900">
+                    {isLoading ? <Skeleton className="h-5 md:h-6 w-6 md:w-8" /> : stats.total}
                   </p>
                 </div>
-                <Target className="h-5 w-5 text-gray-400" />
+                <Target className="h-4 w-4 md:h-5 md:w-5 text-gray-400" />
               </div>
             </div>
 
-            <div className="bg-white rounded-xl p-4 shadow-sm border border-white/20">
+            <div className="bg-white rounded-xl p-3 md:p-4 shadow-sm border border-white/20">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-gray-600">Concluídas</p>
-                  <p className="text-2xl font-bold text-green-600">
-                    {isLoading ? <Skeleton className="h-6 w-8" /> : stats.completed}
+                  <p className="text-xs md:text-sm text-gray-600">Concluídas</p>
+                  <p className="text-lg md:text-2xl font-bold text-green-600">
+                    {isLoading ? <Skeleton className="h-5 md:h-6 w-6 md:w-8" /> : stats.completed}
                   </p>
                 </div>
-                <TrendingUp className="h-5 w-5 text-green-500" />
+                <TrendingUp className="h-4 w-4 md:h-5 md:w-5 text-green-500" />
               </div>
             </div>
 
-            <div className="bg-white rounded-xl p-4 shadow-sm border border-white/20">
+            <div className="bg-white rounded-xl p-3 md:p-4 shadow-sm border border-white/20">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-gray-600">Em Andamento</p>
-                  <p className="text-2xl font-bold text-blue-600">
-                    {isLoading ? <Skeleton className="h-6 w-8" /> : stats.inProgress}
+                  <p className="text-xs md:text-sm text-gray-600">Em Andamento</p>
+                  <p className="text-lg md:text-2xl font-bold text-blue-600">
+                    {isLoading ? <Skeleton className="h-5 md:h-6 w-6 md:w-8" /> : stats.inProgress}
                   </p>
                 </div>
-                <div className="h-5 w-5 bg-blue-500 rounded-full animate-pulse" />
+                <div className="h-4 w-4 md:h-5 md:w-5 bg-blue-500 rounded-full animate-pulse" />
               </div>
             </div>
 
-            <div className="bg-white rounded-xl p-4 shadow-sm border border-white/20">
+            <div className="bg-white rounded-xl p-3 md:p-4 shadow-sm border border-white/20">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-gray-600">Atrasadas</p>
-                  <p className="text-2xl font-bold text-red-600">
-                    {isLoading ? <Skeleton className="h-6 w-8" /> : stats.overdue}
+                  <p className="text-xs md:text-sm text-gray-600">Atrasadas</p>
+                  <p className="text-lg md:text-2xl font-bold text-red-600">
+                    {isLoading ? <Skeleton className="h-5 md:h-6 w-6 md:w-8" /> : stats.overdue}
                   </p>
                 </div>
-                <AlertCircle className="h-5 w-5 text-red-500" />
+                <AlertCircle className="h-4 w-4 md:h-5 md:w-5 text-red-500" />
               </div>
             </div>
           </div>
@@ -269,11 +270,11 @@ const Index = () => {
       </header>
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-6 py-8">
+      <main className="max-w-7xl mx-auto px-4 md:px-6 py-6 md:py-8">
         {isLoading ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
             {Array.from({ length: 6 }).map((_, index) => (
-              <div key={index} className="bg-white rounded-xl p-6 shadow-sm border border-white/20">
+              <div key={index} className="bg-white rounded-xl p-4 md:p-6 shadow-sm border border-white/20">
                 <Skeleton className="h-6 w-3/4 mb-3" />
                 <Skeleton className="h-4 w-full mb-2" />
                 <Skeleton className="h-4 w-2/3 mb-4" />
@@ -286,7 +287,7 @@ const Index = () => {
             ))}
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
             {goals?.map((goal) => (
               <GoalCard 
                 key={goal.id} 

@@ -1,10 +1,11 @@
-
-import React from 'react';
+import React, { useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { GoalCard } from '@/components/GoalCard';
+import { CreateGoalForm } from '@/components/CreateGoalForm';
 import { Goal } from '@/types/Goal';
 import { Skeleton } from '@/components/ui/skeleton';
-import { AlertCircle, Target, TrendingUp } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { AlertCircle, Target, TrendingUp, Plus } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useToast } from '@/hooks/use-toast';
 
@@ -68,6 +69,7 @@ const fetchGoals = async (): Promise<Goal[]> => {
 const Index = () => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const [isCreateFormOpen, setIsCreateFormOpen] = useState(false);
   
   const { data: goals, isLoading, error } = useQuery({
     queryKey: ['goals'],
@@ -129,6 +131,38 @@ const Index = () => {
     }
   };
 
+  const handleCreateGoal = async (goalData: { title: string; description?: string; dueDate: string }) => {
+    try {
+      // Here you would normally make an API call to create the goal
+      // For now, we'll just update the local cache with a mock goal
+      
+      const newGoal: Goal = {
+        id: Date.now(), // Temporary ID for demo
+        title: goalData.title,
+        description: goalData.description || '',
+        deadline: goalData.dueDate,
+        progress: 0,
+        status: 'em_andamento'
+      };
+
+      queryClient.setQueryData(['goals'], (oldGoals: Goal[] | undefined) => {
+        if (!oldGoals) return [newGoal];
+        return [newGoal, ...oldGoals];
+      });
+
+      toast({
+        title: "Meta criada!",
+        description: `A meta "${goalData.title}" foi criada com sucesso.`,
+      });
+    } catch (error) {
+      toast({
+        title: "Erro",
+        description: "Não foi possível criar a meta.",
+        variant: "destructive",
+      });
+    }
+  };
+
   const getStatsFromGoals = (goals: Goal[]) => {
     const total = goals.length;
     const completed = goals.filter(goal => goal.status === 'concluido').length;
@@ -169,7 +203,16 @@ const Index = () => {
                 Acompanhe seu progresso e mantenha-se motivado
               </p>
             </div>
-            <Target className="h-8 w-8 text-indigo-600" />
+            <div className="flex items-center gap-4">
+              <Button
+                onClick={() => setIsCreateFormOpen(true)}
+                className="bg-indigo-600 hover:bg-indigo-700 text-white"
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                Nova Meta
+              </Button>
+              <Target className="h-8 w-8 text-indigo-600" />
+            </div>
           </div>
 
           {/* Stats Cards */}
@@ -267,6 +310,13 @@ const Index = () => {
           </div>
         )}
       </main>
+
+      {/* Create Goal Form Modal */}
+      <CreateGoalForm
+        isOpen={isCreateFormOpen}
+        onClose={() => setIsCreateFormOpen(false)}
+        onCreateGoal={handleCreateGoal}
+      />
     </div>
   );
 };

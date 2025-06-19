@@ -1,11 +1,12 @@
 
 import React from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { GoalCard } from '@/components/GoalCard';
 import { Goal } from '@/types/Goal';
 import { Skeleton } from '@/components/ui/skeleton';
 import { AlertCircle, Target, TrendingUp } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { useToast } from '@/hooks/use-toast';
 
 // Mock API function - replace with your actual API endpoint
 const fetchGoals = async (): Promise<Goal[]> => {
@@ -65,10 +66,68 @@ const fetchGoals = async (): Promise<Goal[]> => {
 };
 
 const Index = () => {
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+  
   const { data: goals, isLoading, error } = useQuery({
     queryKey: ['goals'],
     queryFn: fetchGoals,
   });
+
+  const handleUpdateProgress = async (goalId: number, newProgress: number) => {
+    try {
+      // Here you would normally make an API call to update the goal
+      // For now, we'll just update the local cache
+      
+      queryClient.setQueryData(['goals'], (oldGoals: Goal[] | undefined) => {
+        if (!oldGoals) return oldGoals;
+        
+        return oldGoals.map(goal => 
+          goal.id === goalId 
+            ? { 
+                ...goal, 
+                progress: newProgress,
+                status: newProgress === 100 ? 'concluido' as const : goal.status
+              }
+            : goal
+        );
+      });
+
+      toast({
+        title: "Progresso atualizado!",
+        description: `O progresso da meta foi atualizado para ${newProgress}%.`,
+      });
+    } catch (error) {
+      toast({
+        title: "Erro",
+        description: "Não foi possível atualizar o progresso da meta.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleDeleteGoal = async (goalId: number) => {
+    try {
+      // Here you would normally make an API call to delete the goal
+      // For now, we'll just update the local cache
+      
+      queryClient.setQueryData(['goals'], (oldGoals: Goal[] | undefined) => {
+        if (!oldGoals) return oldGoals;
+        return oldGoals.filter(goal => goal.id !== goalId);
+      });
+
+      toast({
+        title: "Meta excluída!",
+        description: "A meta foi excluída com sucesso.",
+      });
+    } catch (error) {
+      toast({
+        title: "Erro",
+        description: "Não foi possível excluir a meta.",
+        variant: "destructive",
+      });
+    }
+  };
 
   const getStatsFromGoals = (goals: Goal[]) => {
     const total = goals.length;
@@ -186,7 +245,12 @@ const Index = () => {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {goals?.map((goal) => (
-              <GoalCard key={goal.id} goal={goal} />
+              <GoalCard 
+                key={goal.id} 
+                goal={goal} 
+                onUpdateProgress={handleUpdateProgress}
+                onDeleteGoal={handleDeleteGoal}
+              />
             ))}
           </div>
         )}

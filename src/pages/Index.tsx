@@ -1,71 +1,14 @@
-
 import React, { useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { GoalCard } from '@/components/GoalCard';
 import { CreateGoalForm } from '@/components/CreateGoalForm';
 import { Goal } from '@/types/Goal';
+import { goalService } from '@/services/goalService';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
 import { AlertCircle, Target, TrendingUp, Plus } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useToast } from '@/hooks/use-toast';
-
-// Mock API function - replace with your actual API endpoint
-const fetchGoals = async (): Promise<Goal[]> => {
-  // Simulating API call with mock data
-  await new Promise(resolve => setTimeout(resolve, 1000));
-  
-  return [
-    {
-      id: 1,
-      title: "Exercitar-se 30 minutos",
-      description: "Fazer exercícios físicos por pelo menos 30 minutos diariamente para manter a saúde",
-      deadline: "2024-06-25",
-      progress: 75,
-      status: "em_andamento"
-    },
-    {
-      id: 2,
-      title: "Ler 20 páginas",
-      description: "Ler 20 páginas de livros técnicos ou de desenvolvimento pessoal",
-      deadline: "2024-06-20",
-      progress: 100,
-      status: "concluido"
-    },
-    {
-      id: 3,
-      title: "Meditar 15 minutos",
-      description: "Praticar meditação mindfulness para reduzir o estresse e aumentar o foco",
-      deadline: "2024-06-18",
-      progress: 30,
-      status: "atrasado"
-    },
-    {
-      id: 4,
-      title: "Estudar programação",
-      description: "Dedicar 2 horas ao estudo de novas tecnologias e frameworks",
-      deadline: "2024-06-24",
-      progress: 60,
-      status: "em_andamento"
-    },
-    {
-      id: 5,
-      title: "Beber 2L de água",
-      description: "Manter-se hidratado bebendo pelo menos 2 litros de água por dia",
-      deadline: "2024-06-22",
-      progress: 85,
-      status: "em_andamento"
-    },
-    {
-      id: 6,
-      title: "Organizar workspace",
-      description: "Manter o ambiente de trabalho limpo e organizado para aumentar produtividade",
-      deadline: "2024-06-19",
-      progress: 100,
-      status: "concluido"
-    }
-  ];
-};
 
 const Index = () => {
   const { toast } = useToast();
@@ -74,14 +17,14 @@ const Index = () => {
   
   const { data: goals, isLoading, error } = useQuery({
     queryKey: ['goals'],
-    queryFn: fetchGoals,
+    queryFn: goalService.getAllGoals,
   });
 
   const handleUpdateProgress = async (goalId: number, newProgress: number) => {
     try {
-      // Here you would normally make an API call to update the goal
-      // For now, we'll just update the local cache
+      await goalService.updateGoalProgress(goalId, newProgress);
       
+      // Atualizar o cache local
       queryClient.setQueryData(['goals'], (oldGoals: Goal[] | undefined) => {
         if (!oldGoals) return oldGoals;
         
@@ -101,6 +44,7 @@ const Index = () => {
         description: `O progresso da meta foi atualizado para ${newProgress}%.`,
       });
     } catch (error) {
+      console.error('Erro ao atualizar progresso:', error);
       toast({
         title: "Erro",
         description: "Não foi possível atualizar o progresso da meta.",
@@ -111,9 +55,9 @@ const Index = () => {
 
   const handleDeleteGoal = async (goalId: number) => {
     try {
-      // Here you would normally make an API call to delete the goal
-      // For now, we'll just update the local cache
+      await goalService.deleteGoal(goalId);
       
+      // Atualizar o cache local
       queryClient.setQueryData(['goals'], (oldGoals: Goal[] | undefined) => {
         if (!oldGoals) return oldGoals;
         return oldGoals.filter(goal => goal.id !== goalId);
@@ -124,6 +68,7 @@ const Index = () => {
         description: "A meta foi excluída com sucesso.",
       });
     } catch (error) {
+      console.error('Erro ao excluir meta:', error);
       toast({
         title: "Erro",
         description: "Não foi possível excluir a meta.",
@@ -134,18 +79,9 @@ const Index = () => {
 
   const handleCreateGoal = async (goalData: { title: string; description?: string; dueDate: string }) => {
     try {
-      // Here you would normally make an API call to create the goal
-      // For now, we'll just update the local cache with a mock goal
+      const newGoal = await goalService.createGoal(goalData);
       
-      const newGoal: Goal = {
-        id: Date.now(), // Temporary ID for demo
-        title: goalData.title,
-        description: goalData.description || '',
-        deadline: goalData.dueDate,
-        progress: 0,
-        status: 'em_andamento'
-      };
-
+      // Atualizar o cache local
       queryClient.setQueryData(['goals'], (oldGoals: Goal[] | undefined) => {
         if (!oldGoals) return [newGoal];
         return [newGoal, ...oldGoals];
@@ -156,6 +92,7 @@ const Index = () => {
         description: `A meta "${goalData.title}" foi criada com sucesso.`,
       });
     } catch (error) {
+      console.error('Erro ao criar meta:', error);
       toast({
         title: "Erro",
         description: "Não foi possível criar a meta.",
@@ -180,7 +117,7 @@ const Index = () => {
           <Alert className="max-w-md mx-auto mt-20">
             <AlertCircle className="h-4 w-4" />
             <AlertDescription>
-              Erro ao carregar as metas. Tente novamente mais tarde.
+              Erro ao carregar as metas. Verifique se o backend está rodando em localhost:8080 e tente novamente.
             </AlertDescription>
           </Alert>
         </div>

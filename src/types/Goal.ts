@@ -5,7 +5,9 @@ export interface Goal {
   id: number;
   title: string;
   description: string;
-  deadline: string;
+  dueDate: string; // O backend retorna como string ISO
   progress: number;
-  status: GoalStatus;
+  status?: GoalStatus; // Opcional pois pode ser calculado no frontend
+  createdAt?: string; // Campos do backend (opcionais no frontend)
+  updatedAt?: string;
 }

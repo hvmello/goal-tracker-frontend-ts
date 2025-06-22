@@ -1,24 +1,25 @@
 import { Goal } from '@/types/Goal';
 
-// TODO: Alterar esta URL para o ambiente de produção quando necessário
 const API_BASE_URL = 'http://localhost:8080/api';
 
 export const goalService = {
-  // GET /goals - Buscar todas as metas
   getAllGoals: async (): Promise<Goal[]> => {
-    const response = await fetch(`${API_BASE_URL}/goals`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      credentials: 'include', // <--- adicionado
-    });
+    try {
+      const response = await fetch(`${API_BASE_URL}/goals`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+      });
 
       if (!response.ok) {
         throw new Error(`Erro ao buscar metas: ${response.status} - ${response.statusText}`);
       }
 
-      return response.json();
+      const json = await response.json();
+      // Retorna só o array de metas dentro de data
+      return json.data;
     } catch (error) {
       if (error instanceof TypeError && error.message.includes('fetch')) {
         throw new Error('Erro de conexão: Verifique se o backend está rodando em localhost:8080');
@@ -27,30 +28,31 @@ export const goalService = {
     }
   },
 
-  // POST /goals - Criar nova meta
   createGoal: async (goalData: {
     title: string;
     description?: string;
     dueDate: string;
   }): Promise<Goal> => {
-    const response = await fetch(`${API_BASE_URL}/goals`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      credentials: 'include', // <--- adicionado
-      body: JSON.stringify({
-        title: goalData.title,
-        description: goalData.description || '',
-        dueDate: goalData.dueDate,
-      }),
-    });
+    try {
+      const response = await fetch(`${API_BASE_URL}/goals`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({
+          title: goalData.title,
+          description: goalData.description || '',
+          dueDate: goalData.dueDate,
+        }),
+      });
 
       if (!response.ok) {
         throw new Error(`Erro ao criar meta: ${response.status} - ${response.statusText}`);
       }
 
-      return response.json();
+      const json = await response.json();
+      return json.data ?? json; // caso retorne o objeto com data ou só o objeto
     } catch (error) {
       if (error instanceof TypeError && error.message.includes('fetch')) {
         throw new Error('Erro de conexão: Verifique se o backend está rodando em localhost:8080');
@@ -59,22 +61,23 @@ export const goalService = {
     }
   },
 
-  // PUT /goals/:id - Atualizar meta existente
   updateGoal: async (goalId: number, goalData: Partial<Goal>): Promise<Goal> => {
-    const response = await fetch(`${API_BASE_URL}/goals/${goalId}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      credentials: 'include', // <--- adicionado
-      body: JSON.stringify(goalData),
-    });
+    try {
+      const response = await fetch(`${API_BASE_URL}/goals/${goalId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify(goalData),
+      });
 
       if (!response.ok) {
         throw new Error(`Erro ao atualizar meta: ${response.status} - ${response.statusText}`);
       }
 
-      return response.json();
+      const json = await response.json();
+      return json.data ?? json;
     } catch (error) {
       if (error instanceof TypeError && error.message.includes('fetch')) {
         throw new Error('Erro de conexão: Verifique se o backend está rodando em localhost:8080');
@@ -83,22 +86,23 @@ export const goalService = {
     }
   },
 
-  // PUT /goals/:id/progress - Atualizar apenas o progresso da meta
   updateGoalProgress: async (goalId: number, progress: number): Promise<Goal> => {
-    const response = await fetch(`${API_BASE_URL}/goals/${goalId}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      credentials: 'include', // <--- adicionado
-      body: JSON.stringify({ progress }),
-    });
+    try {
+      const response = await fetch(`${API_BASE_URL}/goals/${goalId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({ progress }),
+      });
 
       if (!response.ok) {
         throw new Error(`Erro ao atualizar progresso: ${response.status} - ${response.statusText}`);
       }
 
-      return response.json();
+      const json = await response.json();
+      return json.data ?? json;
     } catch (error) {
       if (error instanceof TypeError && error.message.includes('fetch')) {
         throw new Error('Erro de conexão: Verifique se o backend está rodando em localhost:8080');
@@ -107,15 +111,15 @@ export const goalService = {
     }
   },
 
-  // DELETE /goals/:id - Excluir meta
   deleteGoal: async (goalId: number): Promise<void> => {
-    const response = await fetch(`${API_BASE_URL}/goals/${goalId}`, {
-      method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      credentials: 'include', // <--- adicionado
-    });
+    try {
+      const response = await fetch(`${API_BASE_URL}/goals/${goalId}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+      });
 
       if (!response.ok) {
         throw new Error(`Erro ao excluir meta: ${response.status} - ${response.statusText}`);

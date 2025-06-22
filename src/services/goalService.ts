@@ -1,8 +1,7 @@
-
 import { Goal } from '@/types/Goal';
 
 // TODO: Alterar esta URL para o ambiente de produção quando necessário
-const API_BASE_URL = 'http://localhost:8080';
+const API_BASE_URL = 'http://localhost:8080/api';
 
 export const goalService = {
   // GET /goals - Buscar todas as metas
@@ -12,6 +11,7 @@ export const goalService = {
       headers: {
         'Content-Type': 'application/json',
       },
+      credentials: 'include', // <--- adicionado
     });
 
     if (!response.ok) {
@@ -32,6 +32,7 @@ export const goalService = {
       headers: {
         'Content-Type': 'application/json',
       },
+      credentials: 'include', // <--- adicionado
       body: JSON.stringify({
         title: goalData.title,
         description: goalData.description || '',
@@ -53,6 +54,7 @@ export const goalService = {
       headers: {
         'Content-Type': 'application/json',
       },
+      credentials: 'include', // <--- adicionado
       body: JSON.stringify(goalData),
     });
 
@@ -70,6 +72,7 @@ export const goalService = {
       headers: {
         'Content-Type': 'application/json',
       },
+      credentials: 'include', // <--- adicionado
       body: JSON.stringify({ progress }),
     });
 
@@ -87,6 +90,7 @@ export const goalService = {
       headers: {
         'Content-Type': 'application/json',
       },
+      credentials: 'include', // <--- adicionado
     });
 
     if (!response.ok) {

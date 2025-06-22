@@ -14,11 +14,17 @@ export const goalService = {
       credentials: 'include', // <--- adicionado
     });
 
-    if (!response.ok) {
-      throw new Error(`Erro ao buscar metas: ${response.status}`);
-    }
+      if (!response.ok) {
+        throw new Error(`Erro ao buscar metas: ${response.status} - ${response.statusText}`);
+      }
 
-    return response.json();
+      return response.json();
+    } catch (error) {
+      if (error instanceof TypeError && error.message.includes('fetch')) {
+        throw new Error('Erro de conexão: Verifique se o backend está rodando em localhost:8080');
+      }
+      throw error;
+    }
   },
 
   // POST /goals - Criar nova meta
@@ -40,11 +46,17 @@ export const goalService = {
       }),
     });
 
-    if (!response.ok) {
-      throw new Error(`Erro ao criar meta: ${response.status}`);
-    }
+      if (!response.ok) {
+        throw new Error(`Erro ao criar meta: ${response.status} - ${response.statusText}`);
+      }
 
-    return response.json();
+      return response.json();
+    } catch (error) {
+      if (error instanceof TypeError && error.message.includes('fetch')) {
+        throw new Error('Erro de conexão: Verifique se o backend está rodando em localhost:8080');
+      }
+      throw error;
+    }
   },
 
   // PUT /goals/:id - Atualizar meta existente
@@ -58,11 +70,17 @@ export const goalService = {
       body: JSON.stringify(goalData),
     });
 
-    if (!response.ok) {
-      throw new Error(`Erro ao atualizar meta: ${response.status}`);
-    }
+      if (!response.ok) {
+        throw new Error(`Erro ao atualizar meta: ${response.status} - ${response.statusText}`);
+      }
 
-    return response.json();
+      return response.json();
+    } catch (error) {
+      if (error instanceof TypeError && error.message.includes('fetch')) {
+        throw new Error('Erro de conexão: Verifique se o backend está rodando em localhost:8080');
+      }
+      throw error;
+    }
   },
 
   // PUT /goals/:id/progress - Atualizar apenas o progresso da meta
@@ -76,11 +94,17 @@ export const goalService = {
       body: JSON.stringify({ progress }),
     });
 
-    if (!response.ok) {
-      throw new Error(`Erro ao atualizar progresso: ${response.status}`);
-    }
+      if (!response.ok) {
+        throw new Error(`Erro ao atualizar progresso: ${response.status} - ${response.statusText}`);
+      }
 
-    return response.json();
+      return response.json();
+    } catch (error) {
+      if (error instanceof TypeError && error.message.includes('fetch')) {
+        throw new Error('Erro de conexão: Verifique se o backend está rodando em localhost:8080');
+      }
+      throw error;
+    }
   },
 
   // DELETE /goals/:id - Excluir meta
@@ -93,8 +117,14 @@ export const goalService = {
       credentials: 'include', // <--- adicionado
     });
 
-    if (!response.ok) {
-      throw new Error(`Erro ao excluir meta: ${response.status}`);
+      if (!response.ok) {
+        throw new Error(`Erro ao excluir meta: ${response.status} - ${response.statusText}`);
+      }
+    } catch (error) {
+      if (error instanceof TypeError && error.message.includes('fetch')) {
+        throw new Error('Erro de conexão: Verifique se o backend está rodando em localhost:8080');
+      }
+      throw error;
     }
   },
 };

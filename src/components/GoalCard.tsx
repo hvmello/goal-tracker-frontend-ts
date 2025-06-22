@@ -52,7 +52,7 @@ export const GoalCard: React.FC<GoalCardProps> = ({
     return diffDays;
   };
 
-  const daysLeft = getDaysUntilDeadline(goal.deadline);
+  const daysLeft = getDaysUntilDeadline(goal.dueDate);
 
   const getProgressColor = (progress: number, status: string) => {
     if (status === 'concluido') return 'bg-green-500';
@@ -205,7 +205,7 @@ export const GoalCard: React.FC<GoalCardProps> = ({
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-sm">
           <div className="flex items-center gap-1 text-gray-600">
             <Calendar className="h-4 w-4 flex-shrink-0" />
-            <span>{formatDate(goal.deadline)}</span>
+            <span>{formatDate(goal.dueDate)}</span>
           </div>
           
           <div className={cn(

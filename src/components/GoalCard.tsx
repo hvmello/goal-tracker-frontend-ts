@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
 import { Calendar, Clock, Edit3, Trash2, Save, X } from 'lucide-react';
-import { GoalStatus } from '@/components/GoalStatus';
+import { GoalStatus, getGoalStatus } from '@/components/GoalStatus';
 import { cn } from '@/lib/utils';
 import {
   AlertDialog,
@@ -34,6 +34,8 @@ export const GoalCard: React.FC<GoalCardProps> = ({
 }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [tempProgress, setTempProgress] = useState(goal.progress);
+
+  const status = getGoalStatus(goal);
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -89,7 +91,7 @@ export const GoalCard: React.FC<GoalCardProps> = ({
             <h3 className="font-semibold text-lg text-gray-900 leading-tight mb-2 break-words">
               {goal.title}
             </h3>
-            <GoalStatus status={goal.status} />
+            <GoalStatus status={status} />
           </div>
           
           {/* Action Buttons - Always visible */}

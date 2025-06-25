@@ -34,6 +34,9 @@ export const goalService = {
     dueDate: string;
   }): Promise<Goal> => {
     try {
+
+      const dueDateISO = new Date(goalData.dueDate).toISOString();
+
       const response = await fetch(`${API_BASE_URL}/goals`, {
         method: 'POST',
         headers: {
@@ -43,7 +46,7 @@ export const goalService = {
         body: JSON.stringify({
           title: goalData.title,
           description: goalData.description || '',
-          dueDate: goalData.dueDate,
+          dueDate: dueDateISO,
         }),
       });
 

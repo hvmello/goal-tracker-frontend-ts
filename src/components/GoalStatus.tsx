@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Badge } from '@/components/ui/badge';
-import { GoalStatus as GoalStatusType } from '@/types/Goal';
+import { Goal, GoalStatus as GoalStatusType } from '@/types/Goal';
 import { CheckCircle, Clock, AlertTriangle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -10,7 +10,21 @@ interface GoalStatusProps {
   showIcon?: boolean;
 }
 
+export function getGoalStatus(goal: Goal): 'concluido' | 'em_andamento' | 'atrasado' {
+  const today = new Date();
+  const dueDate = new Date(goal.dueDate);
+  
+  if (goal.progress >= 100) {
+    return 'concluido';
+  } else if (dueDate < today) {
+    return 'atrasado';
+  } else {
+    return 'em_andamento';
+  }
+}
+
 export const GoalStatus: React.FC<GoalStatusProps> = ({ status, showIcon = true }) => {
+  
   const getStatusConfig = (status: GoalStatusType) => {
     switch (status) {
       case 'concluido':

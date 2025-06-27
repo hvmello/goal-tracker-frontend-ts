@@ -4,14 +4,16 @@ import { GoalCard } from '@/components/GoalCard';
 import { CreateGoalForm } from '@/components/CreateGoalForm';
 import { Goal } from '@/types/Goal';
 import { goalService } from '@/services/goalService';
+import { useAuth } from '@/contexts/AuthContext';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
-import { AlertCircle, Target, TrendingUp, Plus } from 'lucide-react';
+import { AlertCircle, Target, TrendingUp, Plus, LogOut, User } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useToast } from '@/hooks/use-toast';
 
 const Index = () => {
   const { toast } = useToast();
+  const { user, logout } = useAuth();
   const queryClient = useQueryClient();
   const [isCreateFormOpen, setIsCreateFormOpen] = useState(false);
   
@@ -19,6 +21,14 @@ const Index = () => {
     queryKey: ['goals'],
     queryFn: goalService.getAllGoals,
   });
+
+  const handleLogout = () => {
+    logout();
+    toast({
+      title: "Logout realizado",
+      description: "Você foi desconectado com sucesso.",
+    });
+  };
 
   const handleUpdateProgress = async (goalId: number, newProgress: number) => {
     try {
@@ -138,16 +148,28 @@ const Index = () => {
                 Dashboard de Metas
               </h1>
               <p className="text-gray-600 text-sm md:text-base">
-                Acompanhe seu progresso e mantenha-se motivado
+                Bem-vindo, {user?.name}! Acompanhe seu progresso
               </p>
             </div>
             <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2 text-sm text-gray-600">
+                <User className="h-4 w-4" />
+                <span className="hidden md:inline">{user?.email}</span>
+              </div>
               <Button
                 onClick={() => setIsCreateFormOpen(true)}
-                className="bg-indigo-600 hover:bg-indigo-700 text-white w-full md:w-auto"
+                className="bg-indigo-600 hover:bg-indigo-700 text-white"
               >
                 <Plus className="h-4 w-4 mr-2" />
                 Nova Meta
+              </Button>
+              <Button
+                onClick={handleLogout}
+                variant="outline"
+                className="text-red-600 border-red-200 hover:bg-red-50"
+              >
+                <LogOut className="h-4 w-4 mr-2" />
+                Sair
               </Button>
               <Target className="h-6 w-6 md:h-8 md:w-8 text-indigo-600 hidden md:block" />
             </div>

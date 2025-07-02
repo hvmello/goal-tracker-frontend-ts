@@ -24,7 +24,7 @@ export interface AuthResponse {
 export const authService = {
   login: async (credentials: LoginRequest): Promise<AuthResponse> => {
     try {
-      const response = await fetch(`${API_BASE_URL}/auth/login`, {
+      const response = await fetch(`${API_BASE_URL}/users/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -48,7 +48,7 @@ export const authService = {
 
   register: async (userData: RegisterRequest): Promise<AuthResponse> => {
     try {
-      const response = await fetch(`${API_BASE_URL}/auth/register`, {
+      const response = await fetch(`${API_BASE_URL}/users/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

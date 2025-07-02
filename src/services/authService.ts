@@ -79,10 +79,16 @@ export const authService = {
     return localStorage.getItem('auth_token');
   },
 
-  getUser: () => {
+getUser: () => {
+  try {
     const userData = localStorage.getItem('user_data');
     return userData ? JSON.parse(userData) : null;
-  },
+  } catch {
+    
+    localStorage.removeItem('user_data');
+    return null;
+  }
+},
 
   setAuthData: (token: string, user: any) => {
     localStorage.setItem('auth_token', token);

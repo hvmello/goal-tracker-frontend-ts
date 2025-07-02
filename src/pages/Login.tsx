@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -16,9 +16,18 @@ const Login = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   
-  const { login } = useAuth();
+  const { login, isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
+
+  // Redirect if already authenticated
+  useEffect(() => {
+    console.log('Login page: isAuthenticated =', isAuthenticated);
+    if (isAuthenticated) {
+      console.log('Login page: User is authenticated, redirecting to dashboard');
+      navigate('/', { replace: true });
+    }
+  }, [isAuthenticated, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -26,13 +35,18 @@ const Login = () => {
     setError('');
 
     try {
+      console.log('Login form: Submitting login for:', email);
       await login(email, password);
+      
       toast({
         title: "Login realizado com sucesso!",
         description: "Bem-vindo de volta!",
       });
-      navigate('/');
+      
+      console.log('Login form: Login successful, navigating to dashboard');
+      navigate('/', { replace: true });
     } catch (err: any) {
+      console.error('Login form: Error during login:', err);
       setError(err.message || 'Erro ao fazer login');
       toast({
         title: "Erro no login",

@@ -37,13 +37,14 @@ const Login = () => {
     try {
       console.log('Login form: Submitting login for:', email);
       await login(email, password);
-      
+
       toast({
         title: "Login realizado com sucesso!",
         description: "Bem-vindo de volta!",
       });
-      
+
       console.log('Login form: Login successful, navigating to dashboard');
+      // Navigate to the root route (home/dashboard)
       navigate('/', { replace: true });
     } catch (err: any) {
       console.error('Login form: Error during login:', err);
@@ -57,6 +58,7 @@ const Login = () => {
       setIsLoading(false);
     }
   };
+
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 flex items-center justify-center p-4">

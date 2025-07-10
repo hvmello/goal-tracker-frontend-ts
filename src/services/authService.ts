@@ -21,6 +21,18 @@ export interface AuthResponse {
   };
 }
 
+export interface AuthResponseWrapper {
+  success: boolean;
+  data: {
+    token: string;
+    user: {
+      id: number;
+      name: string;
+      email: string;
+    };
+  };
+}
+
 export const authService = {
   login: async (credentials: LoginRequest): Promise<AuthResponse> => {
     try {
@@ -36,8 +48,14 @@ export const authService = {
         throw new Error(`Erro ao fazer login: ${response.status} - ${response.statusText}`);
       }
 
-      const data = await response.json();
-      return data;
+      const responseData = await response.json() as AuthResponseWrapper;
+      console.log('Login response:', responseData);
+
+      if (!responseData.success) {
+        throw new Error('Login falhou: resposta do servidor indicou falha');
+      }
+
+      return responseData.data; // Return the nested data object
     } catch (error) {
       if (error instanceof TypeError && error.message.includes('fetch')) {
         throw new Error('Erro de conexão: Verifique se o backend está rodando em localhost:8080');
@@ -60,8 +78,14 @@ export const authService = {
         throw new Error(`Erro ao criar conta: ${response.status} - ${response.statusText}`);
       }
 
-      const data = await response.json();
-      return data;
+      const responseData = await response.json() as AuthResponseWrapper;
+      console.log('Register response:', responseData);
+
+      if (!responseData.success) {
+        throw new Error('Registro falhou: resposta do servidor indicou falha');
+      }
+
+      return responseData.data; // Return the nested data object
     } catch (error) {
       if (error instanceof TypeError && error.message.includes('fetch')) {
         throw new Error('Erro de conexão: Verifique se o backend está rodando em localhost:8080');
@@ -70,28 +94,39 @@ export const authService = {
     }
   },
 
+
   logout: () => {
-    localStorage.removeItem('auth_token');
-    localStorage.removeItem('user_data');
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
   },
 
   getToken: (): string | null => {
-    return localStorage.getItem('auth_token');
+    return localStorage.getItem('token');
   },
 
 getUser: () => {
   try {
-    const userData = localStorage.getItem('user_data');
+    const userData = localStorage.getItem('user');
     return userData ? JSON.parse(userData) : null;
   } catch {
     
-    localStorage.removeItem('user_data');
+    localStorage.removeItem('user');
     return null;
   }
 },
 
   setAuthData: (token: string, user: any) => {
-    localStorage.setItem('auth_token', token);
-    localStorage.setItem('user_data', JSON.stringify(user));
+    console.log('Setting auth data in localStorage:', { token, user });
+    localStorage.setItem('token', token);
+    localStorage.setItem('user', JSON.stringify(user));
+
+    // Verify data was set correctly
+    const storedToken = localStorage.getItem('token');
+    const storedUser = localStorage.getItem('user');
+    console.log('Verified localStorage data:', {
+      tokenSet: storedToken === token,
+      userSet: storedUser === JSON.stringify(user)
+    });
   }
+
 };

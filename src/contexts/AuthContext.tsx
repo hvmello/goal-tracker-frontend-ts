@@ -36,39 +36,43 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    console.log('AuthProvider: Checking stored auth data...');
-    const storedToken = authService.getToken();
-    const storedUser = authService.getUser();
-
-    console.log('Stored token:', storedToken ? 'exists' : 'not found');
-    console.log('Stored user:', storedUser);
-
-    if (storedToken && storedUser) {
-      setToken(storedToken);
-      setUser(storedUser);
-      console.log('AuthProvider: User authenticated from storage');
-    }
-    setIsLoading(false);
-  }, []);
+  
+useEffect(() => {
+  const storedToken = authService.getToken();
+  const storedUser = authService.getUser();
+  if (storedToken && storedUser) {
+    setToken(storedToken);
+    setUser(storedUser);
+  }
+  setIsLoading(false);
+}, []);
 
   const login = async (email: string, password: string) => {
+    setIsLoading(true);
     try {
-      console.log('AuthContext: Attempting login for:', email);
-      const response = await authService.login({ email, password });
-      console.log('AuthContext: Login response:', response);
-      
-      setToken(response.token);
-      setUser(response.user);
-      authService.setAuthData(response.token, response.user);
-      
-      console.log('AuthContext: Login successful, user set:', response.user);
+      const data = await authService.login({ email, password });
+      console.log('AuthContext login: Received data from API:', data);
+
+      if (!data || !data.token || !data.user) {
+        throw new Error('Resposta inválida do servidor');
+      }
+
+      // Set auth data in localStorage first
+      authService.setAuthData(data.token, data.user);
+
+      // Then update state
+      setToken(data.token);
+      setUser(data.user);
+
+      console.log('AuthContext: Login successful, auth state updated');
     } catch (error) {
-      console.error('AuthContext: Login error:', error);
+      console.error('AuthContext login error:', error);
       throw error;
+    } finally {
+      setIsLoading(false);
     }
   };
+
 
   const register = async (name: string, email: string, password: string) => {
     try {

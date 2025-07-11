@@ -64,6 +64,19 @@ export const goalService = {
       console.log('goalService: Creating goal:', goalData);
       const dueDateISO = new Date(goalData.dueDate).toISOString();
 
+      // Get the current user from authService
+      const user = authService.getUser();
+
+      // Check if user exists and has an ID
+      if (!user || typeof user.id !== 'number') {
+        console.error('goalService: No valid user found when creating goal');
+        authService.logout();
+        window.location.href = '/login';
+        throw new Error('Sessão inválida. Por favor, faça login novamente.');
+      }
+
+      console.log('goalService: Creating goal for user ID:', user.id);
+
       const response = await fetch(`${API_BASE_URL}/goals`, {
         method: 'POST',
         headers: getAuthHeaders(),
@@ -72,6 +85,7 @@ export const goalService = {
           title: goalData.title,
           description: goalData.description || '',
           dueDate: dueDateISO,
+          userId: user.id, // Include the user ID in the request payload
         }),
       });
 
@@ -97,6 +111,7 @@ export const goalService = {
       throw error;
     }
   },
+
 
   updateGoal: async (goalId: number, goalData: Partial<Goal>): Promise<Goal> => {
     try {
